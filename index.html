@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Sumplete</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A math logic puzzle game created in collaboration with artifical intelligence (ChatGPT)">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+  <meta name="theme-color" content="#f5f5f5">
+  <!--<meta name="theme-color" content="#f5f5f5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">-->
+
+  <script src="https://js.sentry-cdn.com/0ff17e5dba36468a828fe50cf3297aeb.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --bg-color-1: #fff;
+      --bg-color-2: #f5f5f5;
+      --modal-bg-color: rgb(0,0,0);
+      --modal-bg-color: rgba(0,0,0,0.4);
+      --select-bg-color: #e5e5e5;
+      --select-line-color: #000;
+      --select-text-color: #000;
+      --mistake-bg-color: #ffa6a6;
+      --gray-color: #808080;
+      --text-color: #000;
+      --text-color-2: #aba2a2;
+    }
+
+    /*
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color-1: #000;
+        --bg-color-2: #0a0a0a;
+        --modal-bg-color: rgb(255,255,255);
+        --modal-bg-color: rgba(255,255,255,0.4);
+        --select-line-color: #fff;
+        --mistake-bg-color: #ffc6c6;
+        --text-color: #fff;
+        --text-color-2: #545d5d;
+      }
+    }
+    */
+
+    body {
+      padding: 10px;
+      font-family: '-apple-system', 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+      margin: auto;
+      /*max-width: 500px;*/
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+      font-size: 20px;
+      background: var(--bg-color-2);
+      color: var(--text-color);
+    }
+
+    h1 {
+      margin-top: 0px;
+      margin-bottom: 10px;
+      font-size: 22px;
+    }
+
+    h2 {
+      margin-top: 0px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      user-select: none;
+      margin-top: 20px;
+    }
+
+    .cell {
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+    }
+
+    .number {
+      cursor: pointer;
+      font-weight: 500;
+      border: 1px solid var(--text-color);
+      background: var(--bg-color-1);
+    }
+
+    .circle {
+      position: relative;
+    }
+
+    .circle::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 90%;
+      height: 90%;
+      border: 7px solid #6fbd6fa8;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-sizing: border-box;
+    }
+
+    .delete {
+      position: relative;
+    }
+
+    .delete::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120%;
+      height: 120%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff0000' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cline x1='18' y1='6' x2='6' y2='18' /%3E%3Cline x1='6' y1='6' x2='18' y2='18' /%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 20%;
+    }
+
+    .hint {
+      position: relative;
+    }
+
+    .hint::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120%;
+      height: 120%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000fff' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cline x1='18' y1='6' x2='6' y2='18' /%3E%3Cline x1='6' y1='6' x2='18' y2='18' /%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 20%;
+    }
+
+    /*
+    @media (prefers-color-scheme: dark) {
+      .delete::after {
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ee2222' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cline x1='18' y1='6' x2='6' y2='18' /%3E%3Cline x1='6' y1='6' x2='18' y2='18' /%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 60%;
+      }
+
+      .hint::after {
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23222eee' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cline x1='18' y1='6' x2='6' y2='18' /%3E%3Cline x1='6' y1='6' x2='18' y2='18' /%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 60%;
+      }
+    }
+    */
+
+    .vanswer {
+      color: var(--text-color-2);
+      border-top: 1px solid var(--text-color);
+    }
+
+    .hanswer {
+      color: var(--text-color-2);
+      border-left: 1px solid var(--text-color);
+    }
+
+    .correct {
+      color: var(--text-color);
+    }
+
+    .mistake {
+      background-color: var(--mistake-bg-color);
+    }
+
+    .grid[data-size="3"] .number:nth-child(4n+1), .grid[data-size="4"] .number:nth-child(5n+1), .grid[data-size="5"] .number:nth-child(6n+1), .grid[data-size="6"] .number:nth-child(7n+1), .grid[data-size="7"] .number:nth-child(8n+1), .grid[data-size="8"] .number:nth-child(9n+1), .grid[data-size="9"] .number:nth-child(10n+1) {
+      border-left: 2px solid var(--text-color);
+    }
+
+    .grid[data-size="3"] .number:nth-child(-n+4), .grid[data-size="4"] .number:nth-child(-n+5), .grid[data-size="5"] .number:nth-child(-n+6), .grid[data-size="6"] .number:nth-child(-n+7), .grid[data-size="7"] .number:nth-child(-n+8), .grid[data-size="8"] .number:nth-child(-n+9), .grid[data-size="9"] .number:nth-child(-n+10) {
+      border-top: 2px solid var(--text-color);
+    }
+
+    .example-row {
+      margin-top:20px;
+    }
+
+    .example-row .explain {
+      width: 19%;
+      display: inline-block;
+      text-align: right;
+      margin-right: 10px;
+      vertical-align: middle;
+      font-weight: 900;
+      font-size: 16px;
+    }
+
+    .example-row .grid-wrapper {
+      width: calc(79% - 10px);
+      display: inline-block;
+    }
+
+    .example-row .grid {
+      margin-top: 0;
+    }
+
+    .example-row .grid .cell.number {
+      border-bottom: 2px solid var(--text-color);
+    }
+
+    .example-numbers {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      padding: 16px 0px;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .example-numbers .box {
+      width: 23%;
+    }
+
+    .example-numbers .cell {
+      border: 2px solid var(--text-color);
+    }
+
+    .example-numbers .explain {
+      margin-top: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 120%;
+    }
+
+    select,
+    button {
+      min-width: 40px;
+      cursor: pointer;
+      height: 35px;
+      border: 2px solid var(--select-line-color);
+      font-weight: 700;
+      text-align: center;
+      border-radius: 10px;
+      background-color: var(--select-bg-color);
+      color: var(--select-text-color);
+      -webkit-border-radius: 10px;
+      font-size: 15px;
+      margin-top: 2px;
+      margin-bottom: 10px;
+      padding: 1px 6px;
+    }
+
+    select,
+    button:focus {
+      outline: none;
+    }
+
+    button:disabled {
+      color: var(--gray-color);
+    }
+
+    .header a {
+      min-width: 40px;
+      cursor: pointer;
+      height: 35px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--text-color);
+      font-size: 15px;
+      margin-top: 2px;
+      margin-bottom: 10px;
+      padding: 1px 6px;
+      text-decoration: none;
+    }
+
+    .header a:focus {
+      outline: none;
+    }
+
+    .header a.current {
+      color: var(--bg-color-1);
+      background-color: var(--text-color);
+      border: 2px solid var(--text-color);
+      border-radius: 10px;
+      -webkit-border-radius: 10px;
+      text-decoration: none;
+    }
+
+    .header a:link, .header a:visited, .header a:hover, .header a:active { text-decoration: none; }
+
+    .instructions {
+      font-size: 15px;
+    }
+
+    #puzzlenum {
+      display: none;
+    }
+
+    #new {
+      color: var(--bg-color-1);
+      background-color: var(--text-color);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .credits {
+      border-top: 2px solid #e5e5e5;
+      padding-top: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--gray-color);
+    }
+
+    a {
+      color: var(--text-color);
+    }
+
+    .modal {
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--modal-bg-color);
+    }
+
+    .modal-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 25px;
+      margin: 15% auto;
+      gap: 24px;
+      isolation: isolate;
+      position: relative;
+      min-width: 200px;
+      max-width: 500px;
+      background: var(--bg-color-1);
+      border-radius: 16px;
+    }
+
+    #update-modal .modal-content {
+      max-width: 460px;
+    }
+
+    @media (max-width: 600px) {
+      #update-modal .modal-content, .modal-content {
+        max-width: 70%;
+      }
+    }
+
+    .modal-content div {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 0px;
+      gap: 16px;
+      flex: none;
+      align-self: stretch;
+      flex-grow: 0;
+      z-index: 0;
+    }
+
+    .modal-content h3 {
+      font-family: 'Inter', '-apple-system', 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 120%;
+      color: var(--text-color);
+      flex: none;
+      align-self: stretch;
+      flex-grow: 0;
+      margin: 0;
+    }
+
+    .modal-content h4 {
+      font-family: 'Inter', '-apple-system', 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 150%;
+      color: var(--text-color);
+      flex: none;
+      flex-grow: 0;
+      margin: 0;
+    }
+
+    .modal-content p, .modal-content ul {
+      margin: 0;
+      font-family: 'Inter', '-apple-system', 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 150%;
+      color: var(--text-color);
+      flex: none;
+      flex-grow: 0;
+    }
+
+    .modal span.close {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      right: 24px;
+      top: 24px;
+
+      flex: none;
+      order: 1;
+      flex-grow: 0;
+      z-index: 1;
+    }
+
+    .modal span.close:hover,
+    .modal span.close:focus {
+      color: var(--text-color);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .modal button {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      padding: 16px 24px;
+      gap: 8px;
+
+      /*width: 165px;*/
+      height: 51px;
+
+      background: var(--text-color);
+      color: var(--bg-color-1);
+      border-radius: 4px;
+
+      flex: none;
+      flex-grow: 0;
+      z-index: 2;
+    }
+
+    .bottom-fixed-desktop {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 95px;
+      background: var(--bg-color-2);
+      margin: 0 auto;
+      z-index: 99;
+    }
+
+    .bottom-fixed-desktop .inner {
+      margin: 5px auto 0;
+      height: 90px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .top-fixed-mobile {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 55px;
+      background: var(--bg-color-2);
+      margin: 0 auto;
+      display: none;
+      z-index: 99;
+    }
+
+    .top-fixed-mobile .inner {
+      margin: 0 auto 5px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    body {
+      margin: 0 0 95px;
+    }
+
+    .container, .instructions {
+      margin: 0 auto;
+      max-width: 650px;
+    }
+
+    .hide-instructions .container, .hide-instructions .instructions {
+      max-width: 695px;
+    }
+
+    .two-col-layout {
+      display: flex;
+    }
+
+    .two-col-layout .right-sidebar {
+      width: 160px;
+      margin: 20px 0 0 50px;
+    }
+
+    .below-game-footer-mobile {
+      display: none;
+      margin: 0 auto;
+      justify-content: center;
+      align-items: center;
+      max-width: 336px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .below-game-footer-mobile .inner {
+      margin: auto 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 336px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    @media (max-width: 800px) {
+      .container, .instructions, .hide-instructions .container, .hide-instructions .instructions {
+        max-width: 500px;
+      }
+
+      .bottom-fixed-desktop {
+        display: none;
+      }
+
+      .two-col-layout .right-sidebar {
+        display: none;
+      }
+
+      .top-fixed-mobile {
+        display: block;
+      }
+
+      .below-game-footer-mobile {
+        display: block;
+      }
+
+      body {
+        margin: 55px 0 0;
+      }
+    }
+
+    @media (max-width: 800px) and (max-height: 479px) {
+      .top-fixed-mobile {
+        position: static;
+        display: block;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      .grid {
+        max-width: calc(100vh - 10px);
+      }
+    }
+
+    @media (min-width: 801px) and (min-height: 480px) and (max-height: 599px) {
+      .grid {
+        max-width: calc(100vh - 170px);
+      }
+
+      .grid[data-size="3"], .grid[data-size="4"], .grid[data-size="5"] {
+        max-width: calc(100vh - 215px);
+      }
+    }
+
+    @media (min-width: 801px) and (min-height: 600px) and (max-height: 679px) {
+      .grid {
+        max-width: calc(100vh - 220px);
+      }
+
+      .grid[data-size="3"], .grid[data-size="4"], .grid[data-size="5"] {
+        max-width: calc(100vh - 265px);
+      }
+    }
+
+    @media (min-width: 801px) and (min-height: 680px) {
+      .grid {
+        max-width: calc(100vh - 270px);
+      }
+
+      .grid[data-size="3"], .grid[data-size="4"], .grid[data-size="5"] {
+        max-width: calc(100vh - 315px);
+      }
+    }
+
+    @media (min-width: 801px) and (max-height: 479px) {
+      .bottom-fixed-desktop {
+        position: static;
+        display: block;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      .grid {
+        max-width: calc(100vh - 10px);
+      }
+    }
+  </style>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KW0289X9BZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-KW0289X9BZ');
+  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6421397763619890"
+       crossorigin="anonymous"></script>
+  <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
+  <script>
+    var hggW = window,
+      hggD = document,
+      hggDE = hggD.documentElement,
+      hggB = hggD.getElementsByTagName('body')[0],
+      hggH = hggD.getElementsByTagName('head')[0],
+      hggPWidth = hggW.innerWidth || hggDE.clientWidth || (hggB ? hggB.clientWidth : hggW.screen.availWidth),
+      hggPHeight = hggW.innerHeight || hggDE.clientHeight || (hggB ? hggB.clientHeight : hggW.screen.availHeight);
+    var hggAC = (hggPWidth > 800) ? 1 : 2;
+    var slot1 = null,
+      slot2 = null,
+      slot2sizes = null;
+    window.googletag = window.googletag || {cmd: []};
+    googletag.cmd.push(function() {
+      if (hggAC == 1) {
+        slot1 = googletag.defineSlot('/21687153499/SP_160x600_SideSkyscraper', [160, 600], 'div-gpt-ad-1684448661796-0').addService(googletag.pubads());
+        slot2 = googletag.defineSlot('/21687153499/SP_Flex_BottomBanner', [[728, 90], [970, 90]], 'div-gpt-ad-1684448693454-0').addService(googletag.pubads());
+      }
+      else if (hggAC == 2) {
+        slot2sizes = (hggPWidth >= 350) ? [[336, 280], [300, 250]] : [300, 250];
+        slot1 = googletag.defineSlot('/21687153499/SP_Flex_Top_Anchor', [[320, 50], [300, 50]], 'div-gpt-ad-1684448733327-0').addService(googletag.pubads());
+        slot2 = googletag.defineSlot('/21687153499/SP_Flex_Bottom', slot2sizes, 'div-gpt-ad-1684448715375-0').addService(googletag.pubads());
+      }
+      googletag.pubads().disableInitialLoad();
+      googletag.pubads().enableSingleRequest();
+      googletag.enableServices();
+    });
+  </script>
+<script type='text/javascript'>
+  !function(a9,a,p,s,t,A,g){if(a[a9])return;function q(c,r){a[a9]._Q.push([c,r])}a[a9]={init:function(){q("i",arguments)},fetchBids:function(){q("f",arguments)},setDisplayBids:function(){},targetingKeys:function(){return[]},_Q:[]};A=p.createElement(s);A.async=!0;A.src=t;g=p.getElementsByTagName(s)[0];g.parentNode.insertBefore(A,g)}("apstag",window,document,"script","//c.amazon-adsystem.com/aax2/apstag.js");
+
+  apstag.init({
+    pubID: 'c021f0ae-131e-42bf-879b-a9c7b64cc099',
+    adServer: 'googletag',
+    bidTimeout: 2e3
+  });
+
+  if (hggAC == 1) {
+    apsslots = [
+      {slotID: 'div-gpt-ad-1684448661796-0', slotName: '/21687153499/SP_160x600_SideSkyscraper', sizes: [[160, 600]]},
+      {slotID: 'div-gpt-ad-1684448693454-0', slotName: '/21687153499/SP_Flex_BottomBanner', sizes: [[970, 90], [728, 90]]}
+    ];
+  }
+  else if (hggAC == 2) {
+    apsslots = [
+      {slotID: 'div-gpt-ad-1684448733327-0', slotName: '/21687153499/SP_Flex_Top_Anchor', sizes: [[320, 50], [300, 50]]},
+      {slotID: 'div-gpt-ad-1684448715375-0', slotName: '/21687153499/SP_Flex_Bottom', sizes: slot2sizes}
+    ];
+  }
+
+  apstag.fetchBids({slots: apsslots}, function(bids) {
+    googletag.cmd.push(function() {
+      apstag.setDisplayBids();
+      googletag.pubads().refresh([slot1, slot2]);    
+    });
+  });
+</script>
+</head>
+<body>
+  <!--<div id="intro-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div>
+        <h3>How to play Sumplete</h3>
+        <p>Delete numbers so each row/column adds up to the target number at the right/bottom.</p>
+        <p>Once you have correctly deleted the right numbers, the game will automatically let you know you won.</p>
+      </div>
+      <button class="close">Play Sumplete!</button>
+    </div>
+  </div>-->
+
+  <div id="update-modal" class="modal hidden" data-update="5">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div>
+        <h3>Recent updates</h3>
+        <p>We've made a few changes that we hope you'll love!</p>
+        <h4>SUNDAY APRIL 30:</h4>
+        <ul>
+          <li>Fixed issue with red X displaying on older browsers <i>(Sorry for the issue and thanks for your feedback!)</i></li>
+        </ul>
+        <h4>SATURDAY APRIL 29:</h4>
+        <ul>
+          <li>Click/tap on total to fill in remaining circles</li>
+          <li><strike>Dark mode support</strike> <i>(temporarily disabled)</i></li>
+        </ul>
+      </div>
+      <button class="close">Play Sumplete!</button>
+    </div>
+  </div>
+
+  <div class="bottom-fixed-desktop">
+    <div class="inner">
+      <!-- /21687153499/SP_Flex_BottomBanner -->
+      <div id='div-gpt-ad-1684448693454-0' style='min-width: 728px; min-height: 90px;'>
+        <script>
+          if (hggAC == 1) {
+            googletag.cmd.push(function() { googletag.display('div-gpt-ad-1684448693454-0'); });
+          }
+        </script>
+      </div>
+    </div>
+  </div>
+  
+  <div class="top-fixed-mobile">
+    <div class="inner">
+      <!-- /21687153499/SP_Flex_Top_Anchor -->
+      <div id='div-gpt-ad-1684448733327-0' style='min-width: 300px; min-height: 50px;'>
+        <script>
+          if (hggAC == 2) {
+            googletag.cmd.push(function() { googletag.display('div-gpt-ad-1684448733327-0'); });
+          }
+        </script>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="two-col-layout">
+      <div>
+        <h2 class="header"><a href="/" class="current">Home</a>&emsp;<a href="/daily">Daily 5x5</a>&emsp;<a href="/master">Daily 7x7</a>&emsp;<a href="/about">About</a></h2>
+        <h1 id="h1">Sumplete</h1>
+        <div id="instructions" class="instructions">Delete numbers so each row/column adds up to the target number at the right/bottom. <a href="#howto">Learn more</a>.</div>
+        <div id="loadgame">
+          <div id="puzzlenum"></div>
+          <div class="grid" id="grid"></div>
+          <div class="controls">
+            <button id="mistakes">Check</button>
+            <button id="hint">Hint</button>
+            <button id="restart">Clear</button>
+            <button id="reveal">Reveal</button>
+            <button id="undo" disabled>Undo</button>
+            <button id="remove" class="hidden">Remove Mistakes</button>
+          </div>
+          <h2 class="complete hidden">Puzzle solved! Well done</h2>
+          <h2 class="revealed hidden">Better luck next time!</h2>
+        </div>
+        <div class="new">
+          <select id="size" onchange="sizechanged()">
+            <option value="3">3x3</option>
+            <option value="4">4x4</option>
+            <option value="5">5x5</option>
+            <option value="6">6x6</option>
+            <option value="7">7x7</option>
+            <option value="8">8x8</option>
+            <option value="9">9x9</option>
+          </select>
+          <select id="level">
+            <option value="1">easy</option>
+            <option value="2">medium</option>
+            <option value="3">hard</option>
+            <option value="4">expert</option>
+          </select>
+          <button id="new">New puzzle</button>
+        </div>
+        <button id="invite" class="hidden">Invite a friend to try Sumplete!</button>
+      </div>
+      <div class="right-sidebar">
+        <!-- /21687153499/SP_160x600_SideSkyscraper -->
+        <div id='div-gpt-ad-1684448661796-0' style='min-width: 160px; min-height: 600px;'>
+          <script>
+            if (hggAC == 1) {
+              googletag.cmd.push(function() { googletag.display('div-gpt-ad-1684448661796-0'); });
+            }
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="below-game-footer-mobile">
+    <div class="inner">
+      <!-- /21687153499/SP_Flex_Bottom -->
+      <div id='div-gpt-ad-1684448715375-0' style='min-width: 300px; min-height: 250px; max-width: 336px;'>
+        <script>
+          if (hggAC == 2) {
+            googletag.cmd.push(function() { googletag.display('div-gpt-ad-1684448715375-0'); });
+          }
+        </script>
+      </div>
+    </div>
+  </div>
+
+  <div class="instructions">
+    <p id="feedbacklink"><a href="/feedback">Have feedback?</a></p>
+    <h3><a name="howto">How to play Sumplete</a></h3>
+    <p>Sumplete is a logic-based number game recently created <a href="/about" target="_blank">in collaboration with ChatGPT</a>!</p>
+    <p>Sumplete is inspired by <a href="https://www.sudokuconquest.com/" target="_blank">Sudoku</a>, <a href="https://www.kakuroconquest.com/" target="_blank">Kakuro</a>, and <a href="https://www.hitoriconquest.com/" target="_blank">Hitori</a>, but with a twist.</p>
+    <p>In Sumplete, the twist is that each row and column also has a "sum clue" associated with it. This clue tells you the sum of the numbers in that row or column. For example, if the sum clue for a row is 21, then the numbers in that row must add up to 21.</p>
+    <p>By default, every number on the grid is an "unknown" state. Your goal is to identify which numbers to delete and which to keep to ensure that the sum in each column and row matches its corresponding "sum clue".</p>
+    <div class="example-numbers">
+      <div class="box">
+        <div class="cell number">7</div>
+        <div class="explain">Unknown</div>
+      </div>
+      <div class="box">
+        <div class="cell number delete">4</div>
+        <div class="explain">Deleted</div>
+      </div>
+      <div class="box">
+        <div class="cell number circle">5</div>
+        <div class="explain">Keep</div>
+      </div>
+    </div>
+    <p>To mark a cell as deleted, click or tap once and you'll see an X.</p>
+    <p>To mark a cell as one you for sure want to keep, click or tap again and you'll see a green circle.</p>
+    <p>Click or tap one final time to reset to "unknown" state.</p>
+    <p>You'll need to keep track of the sums of each row and column as you go along to make sure you're on the right track.</p>
+    <div class="example-row">
+    <div class="explain">BEFORE</div>
+    <div class="grid-wrapper"><div class="grid" id="example-row-1" data-size="3"><div class="cell number" style="width: calc(25%);">7</div><div class="cell number" style="width: calc(25%);">8</div><div class="cell number" style="width: calc(25%);">2</div><div class="cell hanswer" style="width: calc(25%);">9</div></div></div>
+    </div>
+    <div class="example-row">
+    <div class="explain">WINNING ROW</div>
+    <div class="grid-wrapper"><div class="grid" id="example-row-2" data-size="3"><div class="cell number" style="width: calc(25%);">7</div><div class="cell number delete" style="width: calc(25%);">8</div><div class="cell number" style="width: calc(25%);">2</div><div class="cell hanswer correct" style="width: calc(25%);">9</div></div></div>
+    </div>
+    <p>Once you have successfully removed the correct numbers, the sum total on the right/bottom will light up.
+    <p>Once all numbers on the right and bottom of the grid are lit up, you’ll have won the game!</p>
+    <h4 style="text-align:center;">What you'll see if you win a game</h4>
+    <div class="grid" id="winning-sumplete-example-grid" data-size="3"><div class="cell number circle" style="width: calc(25%); height: calc(25%);">7</div><div class="cell number circle" style="width: calc(25%); height: calc(25%);">7</div><div class="cell number delete" style="width: calc(25%); height: calc(25%);">6</div><div class="cell hanswer correct" style="width: calc(25%); height: calc(25%);">14</div><div class="cell number circle" style="width: calc(25%); height: calc(25%);">9</div><div class="cell number delete" style="width: calc(25%); height: calc(25%);">9</div><div class="cell number delete" style="width: calc(25%); height: calc(25%);">5</div><div class="cell hanswer correct" style="width: calc(25%); height: calc(25%);">9</div><div class="cell number delete" style="width: calc(25%); height: calc(25%);">5</div><div class="cell number circle" style="width: calc(25%); height: calc(25%);">5</div><div class="cell number circle" style="width: calc(25%); height: calc(25%);">1</div><div class="cell hanswer correct" style="width: calc(25%); height: calc(25%);">6</div><div class="cell vanswer correct" style="width: calc(25%); height: calc(25%);">16</div><div class="cell vanswer correct" style="width: calc(25%); height: calc(25%);">12</div><div class="cell vanswer correct" style="width: calc(25%); height: calc(25%);">1</div><div class="cell" style="width: calc(25%); height: calc(25%);"></div></div>
+  </div>
+
+  <script>
+    let examplegrid = document.getElementById('winning-sumplete-example-grid');
+    examplegrid.style.height = examplegrid.offsetWidth + 'px';
+
+    let examplerow1 = document.getElementById('example-row-1');
+    examplerow1.style.height = (examplerow1.offsetWidth / 4.) + 'px';
+
+    let examplerow2 = document.getElementById('example-row-2');
+    examplerow2.style.height = (examplerow2.offsetWidth / 4.) + 'px';
+
+    let examplenumbers = document.querySelectorAll('.example-numbers .number');
+    for (let i=0; i<examplenumbers.length; i++) {
+      examplenumbers[i].style.height = examplenumbers[i].offsetWidth + 'px';
+    }
+
+    const initialload = Date.now();
+
+    const puzzles = {3:[100000],4:[100000],5:[100000],6:[100000,53100],7:[100000,100000,4100,100000],8:[100000,100000,100000,100000],9:[43000,100000,100000,46900,100000]};
+    const levels = ['easy','medium','hard','expert','master'];
+
+    gridsize = 4;
+    numbersize = gridsize - 1;
+    document.getElementById('size').value = numbersize;
+    sizechanged();
+
+    const loadgame = document.getElementById('loadgame');
+    let undoStack = Array();
+    let existing = false;
+
+    if (localStorage.getItem('loadgame') !== null) {
+      loadgame.innerHTML = localStorage.getItem('loadgame').replace(/<style[^>]*>[^<]*<\/style>/g, '');
+      let gridElement = document.getElementById('grid');
+      if (gridElement == null || gridElement.childNodes.length < 4) {
+        generate(3, 1);
+      }
+      else {
+        let newClasses = loadgame.getElementsByClassName('new');
+        if (newClasses.length > 0) {
+          newClasses[0].parentNode.removeChild(newClasses[0]);
+        }
+        if (!document.querySelector('.complete').classList.contains('hidden')) {
+          document.querySelector('#invite').classList.remove('hidden');
+        }
+      }
+
+      let controlClasses = document.getElementsByClassName('controls');
+      let completeClasses = document.getElementsByClassName('complete');
+      let revealedClasses = document.getElementsByClassName('revealed');
+      if (controlClasses.length == 0 || controlClasses[0].getElementsByTagName('button').length < 6 || completeClasses.length == 0 || revealedClasses.length == 0 || loadgame.innerHTML.indexOf('Errors') != -1) {
+        loadgame.innerHTML = gridElement.outerHTML + '<div class="controls"><button id="mistakes">Check</button> <button id="hint">Hint</button> <button id="restart">Clear</button> <button id="reveal">Reveal</button> <button id="undo" disabled>Undo</button> <button id="remove" class="hidden">Remove Mistakes</button> </div> <h2 class="complete hidden">Puzzle solved! Well done</h2> <h2 class="revealed hidden">Better luck next time!</h2>';
+      }
+
+      document.getElementById('undo').disabled = true;
+
+      numbersize = document.querySelectorAll('#grid .hanswer').length;
+      gridsize = numbersize + 1;
+      document.getElementById('size').value = numbersize;
+      document.getElementById('grid').setAttribute('data-size', numbersize);
+      sizechanged();
+      if (document.getElementById('savedlevel') != null) {
+        document.getElementById('level').value = document.getElementById('savedlevel').value;
+      }
+      if (numbersize > 5) {
+        document.getElementById('instructions').classList.add('hidden');
+        document.body.classList.add('hide-instructions');
+      }
+
+      let puzzlenumel = document.getElementById('puzzlenum');
+      if (puzzlenumel && puzzlenumel.innerHTML) {
+        document.getElementById('h1').innerHTML = 'Sumplete: ' + puzzlenumel.innerHTML;
+      }
+
+      existing = true;
+
+      gridElement.style.height = gridElement.offsetWidth + 'px';
+    } else {
+      generate(3, 1);
+      document.getElementById('feedbacklink').classList.add('hidden');
+      //document.getElementById('intro-modal').classList.remove('hidden');
+    }
+
+    let lastUpdateVersion = localStorage.getItem('update-version');
+    let updateModal = document.getElementById('update-modal');
+    let updateVersion = updateModal.getAttribute('data-update');
+    if (updateVersion != lastUpdateVersion) {
+      localStorage.setItem('update-version', updateVersion);
+      if (existing) {
+        updateModal.classList.remove('hidden');
+      }
+    }
+
+    function sizechanged() {
+      document.getElementById('level').innerHTML = "";
+
+      let chosensize = parseInt(document.getElementById('size').value);
+      let maxlevels = puzzles[chosensize].length;
+      for (let i=0; i<maxlevels; i++) {
+        let opt = document.createElement('option');
+        opt.value = (i + 1);
+        opt.innerText = levels[i];
+        document.getElementById('level').appendChild(opt);
+      }
+
+      document.getElementById('level').style.display = maxlevels == 1 ? 'none' : '';
+    }
+
+    function generate(ns, level) {
+      let xhr = new XMLHttpRequest();
+      xhr.open('GET', 'http://pmqxyz.hopto.org/random_szam.txt', false);
+      xhr.send();
+      xhr.onreadystatechange = function() {
+      	if(xhr.readyState == 4 && xhr.status == 200){
+		let num = parseFloat(xhr.responseText);
+	}
+      }
+      
+      let pn = Math.floor(parseFloat(xhr.responseText) * puzzles[ns][level-1]) + 1;
+      // let pf = pn - (pn % 100) + 1;
+      let pf = pn - (((pn - 1) % 100) + 1) + 1;
+      xhr.open('GET', 'https://data.sumplete.com/' + ns + '/' + level + '/' + pf + '.txt', true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          let puzzlelines = xhr.responseText.split(/\n/);
+          for (let i=0; i<puzzlelines.length; i++) {
+            let z = puzzlelines[i].split(/\:/);
+            if (z[0] == pn) {
+              let y = z[1].split(/;/);
+              let numberGrid = y[0].split(',');
+              let rowSums = y[1].split(',');
+              let colSums = y[2].split(',');
+              let statusGrid = y[3].split(',');
+              updateboard(pn, ns, level, numberGrid, statusGrid, rowSums, colSums);
+              break;
+            }
+          }
+        }
+      };
+      xhr.send();
+    }
+
+    function updateboard(pn, ns, level, numberGrid, statusGrid, rowSums, colSums) {
+      numbersize = ns;
+      gridsize = numbersize + 1;
+
+      undoStack = Array();
+
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+
+      for (let i = 0; i < gridsize * gridsize; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        grid.appendChild(cell);
+      }
+
+      for (let i = 0; i <= numbersize - 1; i++) {
+        for (let j = 0; j <= numbersize - 1; j++) {
+          let indexA = i * numbersize + j;
+          let index = i * gridsize + j;
+          let cell = grid.children[index];
+          cell.textContent = numberGrid[indexA];
+          cell.classList.add('number');
+          if (statusGrid[indexA] == 1) {
+            cell.classList.add('solution');
+          }
+        }
+      }
+
+      for (let i = 0; i <= numbersize - 1; i++) {
+        let index = i * gridsize + (gridsize - 1);
+        let cell = grid.children[index];
+        cell.textContent = rowSums[i];
+        cell.classList.add('hanswer');
+      }
+
+      for (let j = 0; j <= numbersize - 1; j++) {
+        let index = numbersize * gridsize + j;
+        let cell = grid.children[index];
+        cell.textContent = colSums[j];
+        cell.classList.add('vanswer');
+      }
+
+      if (numbersize > 5) {
+        document.getElementById('instructions').classList.add('hidden');
+        document.body.classList.add('hide-instructions');
+      }
+      else {
+        document.getElementById('instructions').classList.remove('hidden');
+        document.body.classList.remove('hide-instructions');
+      }
+
+      grid.style.height = grid.offsetWidth + 'px';
+      const cellWidth = 'calc(100% / ' + gridsize + ')';
+      Array.from(grid.children).forEach((cell) => {
+        cell.style.width = cellWidth;
+        cell.style.height = cellWidth;
+      });
+
+      document.getElementById('grid').setAttribute('data-size', numbersize);
+
+      const savedLevel = document.createElement('input');
+      savedLevel.type = 'hidden';
+      savedLevel.id = 'savedlevel';
+      savedLevel.value = document.getElementById('level').value;
+      document.getElementById('grid').appendChild(savedLevel);
+
+      let puzzlenumel = document.getElementById('puzzlenum');
+      if (puzzlenumel == null) {
+        puzzlenumel = document.createElement('div');
+        puzzlenumel.id = 'puzzlenum';
+        grid.parentNode.insertBefore(puzzlenumel, grid);
+      }
+
+      puzzlenumel.innerHTML = numbersize + 'x' + numbersize + ' ' + levels[level-1].charAt(0).toUpperCase() + levels[level-1].slice(1) + ' #' + pn;
+      document.getElementById('h1').innerHTML = 'Sumplete: ' + puzzlenumel.innerHTML;
+
+      check();
+
+      checkForPageReload();
+    }
+
+    function checkForPageReload() {
+      if (Date.now() - initialload > 30000) {
+        window.location.reload();
+      }
+    }
+
+    // Check rows and columns
+    function check() {
+      const grid = document.getElementById('grid');
+
+      // Check rows
+      for (let i = 0; i < gridsize - 1; i++) {
+        let sum = 0;
+        for (let j = 0; j < gridsize - 1; j++) {
+          let index = i * gridsize + j;
+          let cell = grid.children[index];
+          if (!cell.classList.contains('delete')) {
+            sum += parseInt(cell.textContent);
+          }
+        }
+        let index = i * gridsize + (gridsize - 1);
+        let cell = grid.children[index];
+        if (sum == parseInt(cell.textContent)) {
+          cell.classList.add('correct');
+        } else {
+          cell.classList.remove('correct');
+        }
+      }
+      // Check columns
+      for (let j = 0; j < gridsize - 1; j++) {
+        let sum = 0;
+        for (let i = 0; i < gridsize - 1; i++) {
+          let index = i * gridsize + j;
+          let cell = grid.children[index];
+          if (!cell.classList.contains('delete')) {
+            sum += parseInt(cell.textContent);
+          }
+        }
+        let index = numbersize * gridsize + j;
+        let cell = grid.children[index];
+        if (sum == parseInt(cell.textContent)) {
+          cell.classList.add('correct');
+        } else {
+          cell.classList.remove('correct');
+        }
+      }
+      // Check if puzzle complete
+      const correctCells = document.querySelectorAll('#grid .correct');
+      if (correctCells.length == numbersize * 2) {
+        Array.from(document.querySelectorAll('#grid .number:not(.delete)')).forEach((cell) => cell.classList.add('circle'));
+        document.querySelector('.complete').classList.remove('hidden');
+        document.querySelector('#invite').classList.remove('hidden');
+        document.querySelector('.new').classList.remove('hidden');
+        document.querySelector('.controls').classList.add('hidden');
+      }
+
+      localStorage.setItem('loadgame', loadgame.innerHTML);
+    }
+
+    // Number clicks
+    const grid = document.getElementById('grid');
+    touchendonly = false;
+    touchmoved = false;
+    touchendonly = false;
+
+    grid.addEventListener('touchstart', function (e) {
+      touchmoved = false;
+      touchendonly = true;
+    }, {passive: true});
+
+    grid.addEventListener('touchmove', function (e) {
+      touchmoved = true;
+    }, {passive: true});
+
+    grid.addEventListener('touchend', function (e) {
+      if (!touchmoved) {
+        numberClick(e);
+      }
+    }, {passive: true});
+
+    grid.addEventListener('click', function (e) {
+      if (!touchendonly) {
+        numberClick(e);
+      }
+    });
+
+    function numberClick(e) {
+      const target = e.target;
+      if (!target.classList.contains('number')) {
+        const grid = document.getElementById('grid');
+        if (target.classList.contains('vanswer')) {
+          let column = 0;
+          let t = target.previousSibling;
+          while (t.classList.contains('vanswer')) {
+            column++;
+            t = t.previousSibling;
+          }
+
+          if (target.classList.contains('correct')) {
+            for (let i = 0; i <= numbersize - 1; i++) {
+              let index = i * gridsize + column;
+              let cell = grid.children[index];
+              if (!cell.classList.contains('delete') && !cell.classList.contains('circle')) {
+                let undoActions = Array();
+                cell.classList.add('circle');
+                undoActions.push('remove', 'circle');
+                undoStack.push(cell, undoActions);
+              }
+            }
+          }
+          else {
+            let sum = 0;
+            for (let i = 0; i <= numbersize - 1; i++) {
+              let index = i * gridsize + column;
+              let cell = grid.children[index];
+              if (cell.classList.contains('circle')) {
+                sum += parseInt(cell.textContent);
+              }
+            }
+
+            deleteRemainder = (sum == parseInt(grid.children[numbersize * gridsize + column].textContent));
+
+            if (deleteRemainder) {
+              for (let i = 0; i <= numbersize - 1; i++) {
+                let index = i * gridsize + column;
+                let cell = grid.children[index];
+                if (!cell.classList.contains('delete') && !cell.classList.contains('circle')) {
+                  let undoActions = Array();
+                  cell.classList.add('delete');
+                  undoActions.push('remove', 'delete');
+                  undoStack.push(cell, undoActions);
+                }
+              }
+            }
+          }
+
+          check();
+        }
+        else if (target.classList.contains('hanswer')) {
+          let row = 0;
+          let t = target.previousSibling;
+          while (t != null) {
+            if (t.classList.contains('hanswer')) {
+              row++;
+            }
+            t = t.previousSibling;
+          }
+
+          if (target.classList.contains('correct')) {
+            for (let i = 0; i <= numbersize - 1; i++) {
+              let index = row * gridsize + i;
+              let cell = grid.children[index];
+              if (!cell.classList.contains('delete') && !cell.classList.contains('circle')) {
+                let undoActions = Array();
+                cell.classList.add('circle');
+                undoActions.push('remove', 'circle');
+                undoStack.push(cell, undoActions);
+              }
+            }
+          }
+          else {
+            let sum = 0;
+            for (let i = 0; i <= numbersize - 1; i++) {
+              let index = row * gridsize + i;
+              let cell = grid.children[index];
+              if (cell.classList.contains('circle')) {
+                sum += parseInt(cell.textContent);
+              }
+            }
+
+            deleteRemainder = (sum == parseInt(grid.children[row * gridsize + (gridsize - 1)].textContent));
+
+            if (deleteRemainder) {
+              for (let i = 0; i <= numbersize - 1; i++) {
+                let index = row * gridsize + i;
+                let cell = grid.children[index];
+                if (!cell.classList.contains('delete') && !cell.classList.contains('circle')) {
+                  let undoActions = Array();
+                  cell.classList.add('delete');
+                  undoActions.push('remove', 'delete');
+                  undoStack.push(cell, undoActions);
+                }
+              }
+            }
+          }
+
+          check();
+        }
+
+        return;
+      }
+
+      if (!document.querySelector('.complete').classList.contains('hidden') || !document.querySelector('.revealed').classList.contains('hidden')) {
+        return;
+      }
+
+      if (target.classList.contains('hint')) {
+        return;
+      }
+
+      let undoActions = Array();
+
+      // Set state of cell
+      if (target.classList.contains('mistake')) {
+        target.classList.remove('mistake');
+        if (target.classList.contains('delete')) {
+          target.classList.remove('delete');
+          undoActions.push('add', 'delete');
+        } else if (target.classList.contains('circle')) {
+          target.classList.remove('circle');
+          undoActions.push('add', 'circle');
+        }
+      } else if (target.classList.contains('delete')) {
+        target.classList.remove('delete');
+        undoActions.push('add', 'delete');
+        target.classList.add('circle');
+        undoActions.push('remove', 'circle');
+      } else if (target.classList.contains('circle')) {
+        target.classList.remove('circle');
+        undoActions.push('add', 'circle');
+      } else {
+        target.classList.add('delete');
+        undoActions.push('remove', 'delete');
+      }
+
+      undoStack.push(target, undoActions);
+      document.getElementById('undo').disabled = false;
+
+      // Hide remove if no more mistakes
+      const mistakes = document.querySelectorAll('#grid .mistake');
+      if (mistakes.length == 0) {
+        document.getElementById('remove').classList.add('hidden');
+      }
+
+      check();
+    }
+
+    // Show mistakes
+    document.getElementById('undo').addEventListener('click', function () {
+      if (undoStack.length < 2) {
+        document.getElementById('undo').disabled = true;
+        return;
+      }
+
+      undoActions = undoStack.pop();
+      target = undoStack.pop();
+
+      for (let i = undoActions.length - 2; i >= 0; i -= 2) {
+        if (undoActions[i] == 'add') {
+          target.classList.add(undoActions[i + 1]);
+        } else if (undoActions[i] == 'remove') {
+          target.classList.remove(undoActions[i + 1]);
+        }
+        target.classList.remove('mistake');
+      }
+
+      document.getElementById('undo').disabled = (undoStack.length == 0);
+
+      // Hide remove if no more mistakes
+      const mistakes = document.querySelectorAll('#grid .mistake');
+      if (mistakes.length == 0) {
+        document.getElementById('remove').classList.add('hidden');
+      }
+
+      check();
+    });
+
+    // Show mistakes
+    document.getElementById('mistakes').addEventListener('click', function () {
+      const grid = document.getElementById('grid');
+      Array.from(grid.querySelectorAll('.solution.delete')).forEach((cell) => cell.classList.add('mistake'));
+      Array.from(grid.querySelectorAll('.circle:not(.solution)')).forEach((cell) => cell.classList.add('mistake'));
+      if (grid.querySelectorAll('.mistake').length > 0) {
+        document.getElementById('remove').classList.remove('hidden');
+      }
+      else {
+        undoStack = Array();
+        document.getElementById('undo').disabled = true;
+        checkForPageReload();
+      }
+      localStorage.setItem('loadgame', loadgame.innerHTML);
+    });
+
+    // Show hint
+    document.getElementById('hint').addEventListener('click', function () {
+      const grid = document.getElementById('grid');
+      const availableCells = Array.from(grid.querySelectorAll('.number:not(.solution):not(.hint):not(.delete)'));
+      const randomIndex = Math.floor(Math.random() * availableCells.length);
+      availableCells[randomIndex].classList.add('hint', 'delete');
+      check();
+    });
+
+    // Remove mistakes
+    document.getElementById('remove').addEventListener('click', function () {
+      const grid = document.getElementById('grid');
+      Array.from(grid.querySelectorAll('.mistake')).forEach((cell) => cell.classList.remove('mistake', 'circle', 'delete'));
+      document.getElementById('remove').classList.add('hidden');
+      check();
+      checkForPageReload();
+    });
+
+    // Reveal solution
+    document.getElementById('reveal').addEventListener('click', function () {
+      if (confirm('Are you sure you want to reveal the solution to this puzzle?')) {
+        const grid = document.getElementById('grid');
+        Array.from(grid.querySelectorAll('.number')).forEach((cell) => cell.classList.remove('circle', 'delete', 'mistake'));
+        Array.from(grid.querySelectorAll('.solution')).forEach((cell) => cell.classList.add('circle'));
+        Array.from(grid.querySelectorAll('.number:not(.solution)')).forEach((cell) => cell.classList.add('delete'));
+        grid.querySelectorAll('.hanswer').forEach((cell) => cell.classList.add('correct'));
+        grid.querySelectorAll('.vanswer').forEach((cell) => cell.classList.add('correct'));
+        document.querySelector('.revealed').classList.remove('hidden');
+        document.querySelector('.new').classList.remove('hidden');
+        document.querySelector('.controls').classList.add('hidden');
+        localStorage.setItem('loadgame', loadgame.innerHTML);
+      }
+    });
+
+    // Restart puzzle
+    document.getElementById('restart').addEventListener('click', function () {
+      if (confirm('Are you sure you want to restart this puzzle?')) {
+        undoStack = Array();
+        document.getElementById('undo').disabled = true;
+
+        const grid = document.getElementById('grid');
+        Array.from(grid.children).forEach((cell) => cell.classList.remove('hint', 'correct', 'circle', 'delete', 'mistake'));
+        document.querySelector('.complete').classList.add('hidden');
+        document.querySelector('#invite').classList.add('hidden');
+        document.querySelector('.revealed').classList.add('hidden');
+        //document.querySelector('.new').classList.add('hidden');
+        document.querySelector('.controls').classList.remove('hidden');
+        check();
+        checkForPageReload();
+      }
+    });
+
+    // New puzzle
+    document.getElementById('new').addEventListener('click', function () {
+      localStorage.removeItem('loadgame');
+      document.getElementById("grid").innerHTML = "";
+      document.querySelector('.complete').classList.add('hidden');
+      document.querySelector('#invite').classList.add('hidden');
+      document.querySelector('.revealed').classList.add('hidden');
+      //document.querySelector('.new').classList.add('hidden');
+      document.querySelector('.controls').classList.remove('hidden');
+      generate(parseInt(document.getElementById('size').value), parseInt(document.getElementById('level').value));
+    });
+
+    document.getElementById('invite').addEventListener('click', function () {
+      const inviteMessage = "Have you tried this new logic puzzle game? - https://sumplete.com";
+
+      // Check if Web Share API is supported
+      if (navigator.share) {
+        navigator.share({
+          text: inviteMessage,
+        })
+      } else {
+        // Web Share API not supported, copy invite message to clipboard
+        const inviteInput = document.createElement('input');
+        inviteInput.setAttribute('value', inviteMessage);
+        document.body.appendChild(inviteInput);
+        inviteInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(inviteInput);
+        alert('Invite message copied to clipboard.');
+      }
+    });
+
+    // Prevent double click zoom
+    document.addEventListener('dblclick', function (e) {
+      //console.log('Preventing double click zoom; e: ' + e);
+      e.preventDefault();
+    }, { passive: false });
+
+    function modalClose() {
+      let modals = document.querySelectorAll('.modal');
+      for (let i=0; i<modals.length; i++) {
+        modals[i].classList.add('hidden');
+      }
+    }
+
+    let modalCloses = document.querySelectorAll('.modal .close');
+    for (let i=0; i<modalCloses.length; i++) {
+      modalCloses[i].addEventListener('click', function () {
+        modalClose();
+      });
+    }
+  </script>
+</body>
+</html>
