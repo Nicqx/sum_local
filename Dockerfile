@@ -1,5 +1,5 @@
 # Alapvető kép választás (Ubuntu alapú)
-FROM ubuntu:latest
+FROM arm64v8/ubuntu:latest
 
 # Címkézés a szerző adataival
 LABEL maintainer="Nicqx"
