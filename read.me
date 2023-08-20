@@ -14,5 +14,7 @@ with local user:
 sudo chmod 777 random_szam.txt
 
 docker:
-docker build -t apache_image:1.0 .
-docker run -p 80:80 apache_image:1.0
+docker build -t nicqx/sum_local:1.0 .
+docker run -p 80:80 nicqx/sum_local:1.0
+
+docker run nicqx/sum_local:1.0
