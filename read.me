@@ -12,3 +12,7 @@ php -v
 with local user:
 /var/www/html/node szam.js
 sudo chmod 777 random_szam.txt
+
+docker:
+docker build -t apache_image:1.0 .
+docker run -p 80:80 apache_image:1.0
