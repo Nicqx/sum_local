@@ -170,22 +170,40 @@
         }
 
         // Győzelmi feltétel ellenőrzése
-        function checkWinCondition() {
-            const grid = document.getElementById("grid");
-            const cells = Array.from(grid.children);
-            let allCorrect = true;
+	function checkWinCondition() {
+    		const grid = document.getElementById("grid");
+    		const cells = Array.from(grid.children);
 
-            puzzleData.numbers.forEach((num, index) => {
-                if (num === 0 && !cells[index].classList.contains("delete")) {
-                    allCorrect = false;
-                }
-            });
+    		let allCorrect = true;
 
-            if (allCorrect) {
-                stopTimer();
-                alert(`Gratulálok! Az időd: ${formatTime(elapsedTime)}`);
-            }
-        }
+    		// Ellenőrizzük a törlendő mezőket
+    		puzzleData.solution.forEach(index => {
+        		if (!cells[index].classList.contains("delete")) {
+            		allCorrect = false; // Ha egy törlendő mező nincs pirosra jelölve, nem nyert
+        		}
+    		});
+
+    		// Ellenőrizzük a nem törlendő mezőket
+    		puzzleData.numbers.forEach((_, index) => {
+        		if (!puzzleData.solution.includes(index) && cells[index].classList.contains("delete")) {
+            		allCorrect = false; // Ha egy nem törlendő mező pirosra van jelölve, nem nyert
+        		}
+    		});
+
+    		// Ha minden feltétel teljesül, gratulálunk
+    		if (allCorrect) {
+        		stopTimer();
+
+        		// Zöldre váltjuk a megmaradó mezőket
+        		puzzleData.numbers.forEach((_, index) => {
+            			if (!puzzleData.solution.includes(index)) {
+                			cells[index].classList.add("keep");
+            			}
+        		});
+
+        		alert(`Gratulálok! Az időd: ${formatTime(elapsedTime)}`);
+    		}
+	}
 
         // Új játék indítása
         async function startGame() {
