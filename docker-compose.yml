@@ -1,12 +1,11 @@
 version: '3.8'
-
 services:
-  sum_local:
+  sumplete:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - ./random_szam.txt:/app/random_szam.txt
     ports:
-      - "${PORT}:8080"
-    environment:
-      - PORT=${PORT}
+      - "8080:8080"
 

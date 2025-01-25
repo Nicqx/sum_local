@@ -1,20 +1,19 @@
-# Alap kép: egy egyszerű Node.js alapú webszerver
 FROM node:14-alpine
 
-# Alkalmazás könyvtár létrehozása
 WORKDIR /app
 
-# HTML fájlok másolása az alkalmazás könyvtárba
+# Alkalmazás fájlok másolása
 COPY index.html /app/
+COPY server.js /app/
 
-# Egyszerű webszerver telepítése és indítása
-RUN npm install -g http-server
+# Random fájl alapértelmezett tartalommal
+RUN echo "12345" > /app/random_szam.txt
 
-# Alapértelmezett port
-ENV PORT 8080
+# Szükséges modulok telepítése
+RUN npm install express
 
 # Port kitettsége
-EXPOSE $PORT
+EXPOSE 8080
 
-# Webszerver indítása
-CMD ["http-server", "-p", "8080"]
+# Szerver indítása
+CMD ["node", "server.js"]
