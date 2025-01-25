@@ -81,32 +81,39 @@
 
         // Puzzle generálása
         function generatePuzzle(seed) {
-            const randomNumbers = Array.from({ length: gridSize * gridSize }, (_, i) => (seed + i) % 9 + 1);
+		// Véletlenszerű számok generálása
+    		const randomNumbers = Array.from({ length: gridSize * gridSize }, (_, i) => (seed + i) % 9 + 1);
 
-            const rowSums = [];
-            const colSums = Array(gridSize).fill(0);
+    		// Törlendő cellák kiválasztása
+    		const cellsToRemove = Math.floor(gridSize * gridSize * 0.3); // Törlendő számok aránya
+    		const indices = Array.from({ length: gridSize * gridSize }, (_, i) => i);
+    		const solution = [];
 
-            for (let i = 0; i < gridSize; i++) {
-                let rowSum = 0;
-                for (let j = 0; j < gridSize; j++) {
-                    const num = randomNumbers[i * gridSize + j];
-                    rowSum += num;
-                    colSums[j] += num;
-                }
-                rowSums.push(rowSum);
-            }
+    		for (let i = 0; i < cellsToRemove; i++) {
+        		const randomIndex = Math.floor(Math.random() * indices.length);
+        		const index = indices.splice(randomIndex, 1)[0];
+        		solution.push(index); // Eltároljuk a törlendő cellák indexeit
+    		}
 
-            // Törlendő cellák kijelölése
-            const cellsToRemove = Math.floor(gridSize * gridSize * 0.3);
-            const indices = Array.from({ length: gridSize * gridSize }, (_, i) => i);
-            for (let i = 0; i < cellsToRemove; i++) {
-                const randomIndex = Math.floor(Math.random() * indices.length);
-                const index = indices.splice(randomIndex, 1)[0];
-                randomNumbers[index] = 0; // Nullázzuk a cellát
-            }
+    		// Sor- és oszlopösszegek számítása
+    		const rowSums = [];
+    		const colSums = Array(gridSize).fill(0);
 
-            puzzleData = { numbers: randomNumbers, rowSums, colSums };
-            renderGrid();
+    		for (let i = 0; i < gridSize; i++) {
+        		let rowSum = 0;
+        		for (let j = 0; j < gridSize; j++) {
+            		const index = i * gridSize + j;
+            		if (!solution.includes(index)) {
+                		rowSum += randomNumbers[index]; // Csak a megtartott számokat adjuk össze
+                		colSums[j] += randomNumbers[index];
+            		}
+        	}
+        	rowSums.push(rowSum);
+    	}
+
+   	 // Tároljuk a generált adatokat
+    	puzzleData = { numbers: randomNumbers, rowSums, colSums, solution };
+    	renderGrid();
         }
 
         // Tábla kirajzolása
@@ -134,7 +141,7 @@
                         cell.classList.add("sum");
                     } else if (i < gridSize && j < gridSize) {
                         const num = puzzleData.numbers[i * gridSize + j];
-                        cell.textContent = num > 0 ? num : "";
+                        cell.textContent = num;
                         cell.addEventListener("click", () => toggleCellState(cell, i * gridSize + j));
                     }
 
