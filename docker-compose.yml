@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  sum_local:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT}:8080"
+    environment:
+      - PORT=${PORT}
+

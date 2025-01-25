@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Sumplete</title>
+  <title>Sumplete Verseny</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="A math logic puzzle game created in collaboration with artifical intelligence (ChatGPT)">
   <meta charset="UTF-8">
@@ -26,7 +26,42 @@
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">-->
 
   <script src="https://js.sentry-cdn.com/0ff17e5dba36468a828fe50cf3297aeb.min.js" crossorigin="anonymous"></script>
+      <script>
+        // Random szám generálása és tárolása
+        function generateRandomNumber() {
+            const randomNumber = Math.floor(Math.random() * 1000000);
+            localStorage.setItem('randomNumber', randomNumber);
+            return randomNumber;
+        }
 
+        // Random szám lekérése vagy generálása, ha nem létezik
+        function getRandomNumber() {
+            let randomNumber = localStorage.getItem('randomNumber');
+            if (!randomNumber) {
+                randomNumber = generateRandomNumber();
+            }
+            return randomNumber;
+        }
+
+        // Pálya inicializálása a random számmal
+        function initializeGame() {
+            const randomNumber = getRandomNumber();
+            console.log("A generált pálya azonosítója:", randomNumber);
+
+            // Itt add meg a játéklogikát
+            const gameContainer = document.getElementById("game-container");
+            gameContainer.innerHTML = `<p>Pálya azonosító: ${randomNumber}</p>`;
+        }
+
+        // Új pálya generálása gomb eseménykezelője
+        function onNewGameClick() {
+            generateRandomNumber();
+            initializeGame();
+        }
+
+        // Oldal betöltésekor inicializáljuk a játékot
+        window.onload = initializeGame;
+    </script>
   <style>
     :root {
       --bg-color-1: #fff;
@@ -718,7 +753,8 @@
       <button class="close">Play Sumplete!</button>
     </div>
   </div>-->
-
+  <button onclick="onNewGameClick()">Új pálya generálása</button>
+  <div id="game-container"></div>
   <div id="update-modal" class="modal hidden" data-update="5">
     <div class="modal-content">
       <span class="close">&times;</span>
