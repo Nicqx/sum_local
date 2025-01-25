@@ -174,24 +174,25 @@
     		const grid = document.getElementById("grid");
     		const cells = Array.from(grid.children);
 
-    		let allCorrect = true;
+    		let correctDeletions = true;
+    		let correctKeeps = true;
 
     		// Ellenőrizzük a törlendő mezőket
     		puzzleData.solution.forEach(index => {
         		if (!cells[index].classList.contains("delete")) {
-            		allCorrect = false; // Ha egy törlendő mező nincs pirosra jelölve, nem nyert
+            			correctDeletions = false;
         		}
     		});
 
     		// Ellenőrizzük a nem törlendő mezőket
     		puzzleData.numbers.forEach((_, index) => {
         		if (!puzzleData.solution.includes(index) && cells[index].classList.contains("delete")) {
-            		allCorrect = false; // Ha egy nem törlendő mező pirosra van jelölve, nem nyert
+            		correctKeeps = false;
         		}
     		});
 
     		// Ha minden feltétel teljesül, gratulálunk
-    		if (allCorrect) {
+    		if (correctDeletions && correctKeeps) {
         		stopTimer();
 
         		// Zöldre váltjuk a megmaradó mezőket
@@ -204,7 +205,6 @@
         		alert(`Gratulálok! Az időd: ${formatTime(elapsedTime)}`);
     		}
 	}
-
         // Új játék indítása
         async function startGame() {
             resetTimer();
