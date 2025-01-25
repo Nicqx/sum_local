@@ -169,30 +169,30 @@
             checkWinCondition();
         }
 
-        // Győzelmi feltétel ellenőrzése
+        // Győzelmi feltétel ellenőrzés
 	function checkWinCondition() {
     		const grid = document.getElementById("grid");
     		const cells = Array.from(grid.children);
 
-    		let correctDeletions = true;
-    		let correctKeeps = true;
+    		let allDeletionsCorrect = true; // Az összes törlendő helyesen meg van jelölve?
+    		let allKeepsCorrect = true; // Az összes megtartandó helyesen nincs törlésre jelölve?
 
-    		// Ellenőrizzük a törlendő mezőket
+    		// Ellenőrzés: törlendő mezők (solution lista alapján)
     		puzzleData.solution.forEach(index => {
         		if (!cells[index].classList.contains("delete")) {
-            			correctDeletions = false;
+            			allDeletionsCorrect = false;
         		}
     		});
 
-    		// Ellenőrizzük a nem törlendő mezőket
+    		// Ellenőrzés: nem törlendő mezők
     		puzzleData.numbers.forEach((_, index) => {
         		if (!puzzleData.solution.includes(index) && cells[index].classList.contains("delete")) {
-            		correctKeeps = false;
+            		allKeepsCorrect = false;
         		}
     		});
 
-    		// Ha minden feltétel teljesül, gratulálunk
-    		if (correctDeletions && correctKeeps) {
+    		// Ha minden feltétel teljesül
+    		if (allDeletionsCorrect && allKeepsCorrect) {
         		stopTimer();
 
         		// Zöldre váltjuk a megmaradó mezőket
@@ -205,7 +205,8 @@
         		alert(`Gratulálok! Az időd: ${formatTime(elapsedTime)}`);
     		}
 	}
-        // Új játék indítása
+
+	// Új játék indítása
         async function startGame() {
             resetTimer();
             const randomResponse = await fetch("random_szam.txt");
