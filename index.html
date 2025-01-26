@@ -142,7 +142,10 @@
                     } else if (i < gridSize && j < gridSize) {
                         const num = puzzleData.numbers[i * gridSize + j];
                         cell.textContent = num;
-                        cell.addEventListener("click", () => toggleCellState(cell, i * gridSize + j));
+			    cell.addEventListener("click", () => {
+				    toggleCellState(cell, i * gridSize + j)
+			    	    checkWinCondition(); // Ellenőrzés minden kattintás után
+			    });
                     }
 
                     gridContainer.appendChild(cell);
@@ -192,7 +195,7 @@
     		});
 
     		// Ha minden feltétel teljesül
-    		if (allDeletionsCorrect && allKeepsCorrect) {
+    		if (allDeletionsCorrect || allKeepsCorrect) {
         		stopTimer();
 
         		// Zöldre váltjuk a megmaradó mezőket
