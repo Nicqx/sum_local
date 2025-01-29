@@ -3,34 +3,32 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 8080;
-const RANDOM_FILE = path.join(__dirname, "random_szam.txt");
+const PORT = 8080;
 
-// Statikus fájlok kiszolgálása
-app.use(express.static(path.join(__dirname)));
-
-// JSON és szöveges adatok fogadása
+app.use(express.static("public"));
 app.use(express.json());
-app.use(express.text());
 
-// Random fájl tartalmának visszaadása
+// Olvassuk be és küldjük vissza a `random_szam.txt` tartalmát
 app.get("/random_szam.txt", (req, res) => {
-    if (fs.existsSync(RANDOM_FILE)) {
-        const content = fs.readFileSync(RANDOM_FILE, "utf8");
-        res.send(content);
-    } else {
-        res.status(404).send("random_szam.txt not found");
-    }
+    fs.readFile(path.join(__dirname, "public", "random_szam.txt"), "utf8", (err, data) => {
+        if (err) {
+            return res.status(500).send("Hiba a fájl olvasásakor");
+        }
+        res.send(data);
+    });
 });
 
-// Random fájl frissítése
+// Engedjük meg a fájl módosítását
 app.put("/random_szam.txt", (req, res) => {
-    const newContent = req.body.trim();
-    fs.writeFileSync(RANDOM_FILE, newContent, "utf8");
-    res.send("random_szam.txt updated");
+    const newRandom = Math.floor(Math.random() * 1000000).toString();
+    fs.writeFile(path.join(__dirname, "public", "random_szam.txt"), newRandom, (err) => {
+        if (err) {
+            return res.status(500).send("Hiba a fájl írásakor");
+        }
+        res.send("Új random szám: " + newRandom);
+    });
 });
 
-// Szerver indítása
 app.listen(PORT, () => {
-    console.log(`Szerver fut a következő porton: http://localhost:${PORT}`);
+    console.log(`Szerver fut: http://localhost:${PORT}`);
 });

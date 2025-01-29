@@ -1,11 +1,9 @@
-version: '3.8'
+version: "3"
 services:
   sumplete:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ./random_szam.txt:/app/random_szam.txt
+    build: .
     ports:
       - "8080:8080"
+    volumes:
+      - ./public/random_szam.txt:/app/public/random_szam.txt
 
