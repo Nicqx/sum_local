@@ -177,3 +177,9 @@ function generateNewSeed() {
         })
         .catch(error => console.error("Hiba a seed generálásakor:", error));
 }
+
+function resetBoard() {
+    document.querySelectorAll(".cell").forEach(cell => {
+        cell.classList.remove("delete", "keep");
+    });
+}
