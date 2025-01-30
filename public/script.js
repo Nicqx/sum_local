@@ -102,6 +102,7 @@ function generatePuzzle(seed) {
     emptyCorner.style.background = "#ddd";
     emptyCorner.textContent = "";
     grid.appendChild(emptyCorner);
+    updateSumHighlights(); // ✅ Pálya generálás után azonnal lefuttatjuk az ellenőrzést
 }
 
 function toggleCellState(cell) {
