@@ -54,11 +54,6 @@ button {
 }
 
 .highlight {
-    background-color: yellow;
-    cursor: pointer;
-}
-
-.highlight {
-    background-color: #c8f7c5; /* Halványzöld */
+    background-color: #c8f7c5 !important; /* Halványzöld */
     transition: background-color 0.3s ease-in-out;
 }

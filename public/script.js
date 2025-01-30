@@ -73,6 +73,7 @@ function generatePuzzle(seed) {
             cell.classList.add("cell");
             cell.textContent = value;
             cell.dataset.index = i * gridSize + j;
+            cell.id = `cell-${i}-${j}`; // 🔥 Egyedi azonosító minden cellának
             cell.addEventListener("click", () => toggleCellState(cell));
             grid.appendChild(cell);
         }
@@ -82,6 +83,7 @@ function generatePuzzle(seed) {
         rowSumCell.style.background = "#ddd";
         rowSumCell.style.fontWeight = "bold";
         rowSumCell.textContent = rowSums[i];
+        rowSumCell.id = `sum-row-${i}`; // 🔥 Hozzáadunk egy azonosítót a sorösszeg mezőkhöz!
         grid.appendChild(rowSumCell);
     }
 
@@ -91,6 +93,7 @@ function generatePuzzle(seed) {
         colSumCell.style.background = "#ddd";
         colSumCell.style.fontWeight = "bold";
         colSumCell.textContent = colSums[j];
+	colSumCell.id = `sum-col-${j}`; // 🔥 Hozzáadunk egy azonosítót az oszlopösszeg mezőkhöz!
         grid.appendChild(colSumCell);
     }
 
@@ -209,23 +212,25 @@ function giveHint() {
         hintCell.style.backgroundColor = "";
     }, 3000);
 }
+
 function updateSumHighlights() {
     if (!rowSums || !colSums) return;
 
+    // Sorösszegek frissítése és kiemelése
     for (let row = 0; row < gridSize; row++) {
-        let rowSum = 0;
+        let currentRowSum = 0;
         for (let col = 0; col < gridSize; col++) {
             let cell = document.getElementById(`cell-${row}-${col}`);
             if (!cell) continue;
             let cellValue = parseInt(cell.innerText) || 0;
             if (!cell.classList.contains("delete")) {
-                rowSum += cellValue;
+                currentRowSum += cellValue;
             }
         }
 
         let rowSumElement = document.getElementById(`sum-row-${row}`);
         if (rowSumElement) {
-            if (rowSum === rowSums[row]) {
+            if (currentRowSum === rowSums[row]) {
                 rowSumElement.classList.add("highlight");
             } else {
                 rowSumElement.classList.remove("highlight");
@@ -233,20 +238,21 @@ function updateSumHighlights() {
         }
     }
 
+    // Oszlopösszegek frissítése és kiemelése
     for (let col = 0; col < gridSize; col++) {
-        let colSum = 0;
+        let currentColSum = 0;
         for (let row = 0; row < gridSize; row++) {
             let cell = document.getElementById(`cell-${row}-${col}`);
             if (!cell) continue;
             let cellValue = parseInt(cell.innerText) || 0;
             if (!cell.classList.contains("delete")) {
-                colSum += cellValue;
+                currentColSum += cellValue;
             }
         }
 
         let colSumElement = document.getElementById(`sum-col-${col}`);
         if (colSumElement) {
-            if (colSum === colSums[col]) {
+            if (currentColSum === colSums[col]) {
                 colSumElement.classList.add("highlight");
             } else {
                 colSumElement.classList.remove("highlight");
