@@ -183,3 +183,26 @@ function resetBoard() {
         cell.classList.remove("delete", "keep");
     });
 }
+
+function giveHint() {
+    let unmarkedCells = Array.from(document.querySelectorAll(".cell"))
+        .filter(cell => !cell.classList.contains("delete") && !cell.classList.contains("keep") && cell.dataset.index);
+
+    if (unmarkedCells.length === 0) return; // Ha minden jelölve van, ne adjon tippet
+
+    let hintCell = unmarkedCells[Math.floor(Math.random() * unmarkedCells.length)];
+    let index = parseInt(hintCell.dataset.index);
+    let isSolution = puzzleData.solution.includes(index);
+
+    if (isSolution) {
+        hintCell.style.backgroundColor = "rgba(255, 0, 0, 0.3)"; // Halvány piros, ha törlendő
+    } else {
+        hintCell.style.backgroundColor = "rgba(0, 255, 0, 0.3)"; // Halvány zöld, ha megtartandó
+    }
+
+    // 3 másodperc után visszaállítjuk az eredeti háttérszínt
+    setTimeout(() => {
+        hintCell.style.backgroundColor = "";
+    }, 3000);
+}
+
