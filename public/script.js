@@ -127,35 +127,36 @@ function startTimer() {
 }
 
 function checkWinCondition() {
-    let allCorrectAsDeleted = true;
-    let allCorrectAsKept = true;
+    let allCorrectDelete = true;
+    let allCorrectKeep = true;
 
-    document.querySelectorAll(".cell").forEach((cell, index) => {
-        if (!cell.dataset.index) return;
-
-        let isSolution = puzzleData.solution.includes(parseInt(cell.dataset.index));
-
-        if (isSolution && !cell.classList.contains("delete")) {
-            allCorrectAsDeleted = false; 
-        }
-
-        if (!isSolution && !cell.classList.contains("keep")) {
-            allCorrectAsKept = false; 
+    document.querySelectorAll(".cell").forEach(cell => {
+        let index = parseInt(cell.dataset.index);
+        let isSolution = puzzleData.solution.includes(index);
+        
+        if (isSolution) {
+            if (!cell.classList.contains("delete")) {
+                allCorrectDelete = false; // Ha egy pirosra jelölendő nincs pirosan, akkor nem nyerhetünk
+            }
+            if (cell.classList.contains("keep")) {
+                allCorrectKeep = false; // Ha egy pirosra jelölendő zöld, akkor nem nyerhetünk
+            }
+        } else {
+            if (!cell.classList.contains("keep")) {
+                allCorrectKeep = false; // Ha egy zöldre jelölendő nincs zölden, akkor nem nyerhetünk
+            }
+            if (cell.classList.contains("delete")) {
+                allCorrectDelete = false; // Ha egy zöldre jelölendő piros, akkor nem nyerhetünk
+            }
         }
     });
 
-    if (allCorrectAsDeleted || allCorrectAsKept) {
+    if (allCorrectDelete || allCorrectKeep) {
         clearInterval(timerInterval);
-        finalTime = ((Date.now() - startTime) / 1000).toFixed(2);
-        document.getElementById("timer").textContent = `Idő: ${finalTime} másodperc`;
-        alert(`Gratulálok! Az időd: ${finalTime} másodperc`);
-
-        document.querySelectorAll(".cell").forEach((cell, index) => {
-            if (!cell.dataset.index) return;
-
-            let isSolution = puzzleData.solution.includes(parseInt(cell.dataset.index));
-
-            if (isSolution) {
+        alert(`Gratulálok! Az időd: ${document.getElementById("timer").textContent}`);
+        document.querySelectorAll(".cell").forEach(cell => {
+            let index = parseInt(cell.dataset.index);
+            if (puzzleData.solution.includes(index)) {
                 cell.classList.add("delete");
             } else {
                 cell.classList.add("keep");
