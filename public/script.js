@@ -209,19 +209,15 @@ function giveHint() {
         hintCell.style.backgroundColor = "";
     }, 3000);
 }
-
 function updateSumHighlights() {
-    if (!rowSums || !colSums) return; // Ha nincsenek definiálva, ne csináljon semmit
+    if (!rowSums || !colSums) return;
 
     for (let row = 0; row < gridSize; row++) {
         let rowSum = 0;
-        let correctSum = rowSums[row] || 0; // Ha nincs érték, akkor alapértelmezett 0
-
         for (let col = 0; col < gridSize; col++) {
             let cell = document.getElementById(`cell-${row}-${col}`);
-            if (!cell) continue; // Ha nincs ilyen cella, ugorjuk át ezt a cikluslépést
+            if (!cell) continue;
             let cellValue = parseInt(cell.innerText) || 0;
-
             if (!cell.classList.contains("delete")) {
                 rowSum += cellValue;
             }
@@ -229,19 +225,20 @@ function updateSumHighlights() {
 
         let rowSumElement = document.getElementById(`sum-row-${row}`);
         if (rowSumElement) {
-            rowSumElement.classList.toggle("highlight", rowSum === correctSum);
+            if (rowSum === rowSums[row]) {
+                rowSumElement.classList.add("highlight");
+            } else {
+                rowSumElement.classList.remove("highlight");
+            }
         }
     }
 
     for (let col = 0; col < gridSize; col++) {
         let colSum = 0;
-        let correctSum = colSums[col] || 0;
-
         for (let row = 0; row < gridSize; row++) {
             let cell = document.getElementById(`cell-${row}-${col}`);
-            if (!cell) continue; // Ha nincs ilyen cella, ugorjuk át ezt a cikluslépést
+            if (!cell) continue;
             let cellValue = parseInt(cell.innerText) || 0;
-
             if (!cell.classList.contains("delete")) {
                 colSum += cellValue;
             }
@@ -249,7 +246,11 @@ function updateSumHighlights() {
 
         let colSumElement = document.getElementById(`sum-col-${col}`);
         if (colSumElement) {
-            colSumElement.classList.toggle("highlight", colSum === correctSum);
+            if (colSum === colSums[col]) {
+                colSumElement.classList.add("highlight");
+            } else {
+                colSumElement.classList.remove("highlight");
+            }
         }
     }
 }
