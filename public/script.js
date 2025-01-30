@@ -4,6 +4,8 @@ let startTime = null;
 let timerInterval = null;
 let finalTime = null;
 let currentSeed = null;
+let rowSums = [];
+let colSums = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     fetch("/random_szam.txt")
@@ -48,8 +50,8 @@ function generatePuzzle(seed) {
     
     puzzleData.numbers = [];
     puzzleData.solution = [];
-    let rowSums = Array(gridSize).fill(0);
-    let colSums = Array(gridSize).fill(0);
+    rowSums = Array(gridSize).fill(0);
+    colSums = Array(gridSize).fill(0);
     let rng = seed;
 
     for (let i = 0; i < gridSize; i++) {
@@ -113,6 +115,7 @@ function toggleCellState(cell) {
     } else {
         cell.classList.add("delete");
     }
+    updateSumHighlights();
 
     checkWinCondition();
 }
@@ -207,3 +210,46 @@ function giveHint() {
     }, 3000);
 }
 
+function updateSumHighlights() {
+    if (!rowSums || !colSums) return; // Ha nincsenek definiálva, ne csináljon semmit
+
+    for (let row = 0; row < gridSize; row++) {
+        let rowSum = 0;
+        let correctSum = rowSums[row] || 0; // Ha nincs érték, akkor alapértelmezett 0
+
+        for (let col = 0; col < gridSize; col++) {
+            let cell = document.getElementById(`cell-${row}-${col}`);
+            if (!cell) continue; // Ha nincs ilyen cella, ugorjuk át ezt a cikluslépést
+            let cellValue = parseInt(cell.innerText) || 0;
+
+            if (!cell.classList.contains("delete")) {
+                rowSum += cellValue;
+            }
+        }
+
+        let rowSumElement = document.getElementById(`sum-row-${row}`);
+        if (rowSumElement) {
+            rowSumElement.classList.toggle("highlight", rowSum === correctSum);
+        }
+    }
+
+    for (let col = 0; col < gridSize; col++) {
+        let colSum = 0;
+        let correctSum = colSums[col] || 0;
+
+        for (let row = 0; row < gridSize; row++) {
+            let cell = document.getElementById(`cell-${row}-${col}`);
+            if (!cell) continue; // Ha nincs ilyen cella, ugorjuk át ezt a cikluslépést
+            let cellValue = parseInt(cell.innerText) || 0;
+
+            if (!cell.classList.contains("delete")) {
+                colSum += cellValue;
+            }
+        }
+
+        let colSumElement = document.getElementById(`sum-col-${col}`);
+        if (colSumElement) {
+            colSumElement.classList.toggle("highlight", colSum === correctSum);
+        }
+    }
+}
