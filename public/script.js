@@ -85,6 +85,7 @@ function generatePuzzle(seed) {
         rowSumCell.textContent = rowSums[i];
         rowSumCell.id = `sum-row-${i}`; // 🔥 Hozzáadunk egy azonosítót a sorösszeg mezőkhöz!
         grid.appendChild(rowSumCell);
+	rowSumCell.addEventListener("click", () => completeRow(i));
     }
 
     for (let j = 0; j < gridSize; j++) {
@@ -95,6 +96,7 @@ function generatePuzzle(seed) {
         colSumCell.textContent = colSums[j];
 	colSumCell.id = `sum-col-${j}`; // 🔥 Hozzáadunk egy azonosítót az oszlopösszeg mezőkhöz!
         grid.appendChild(colSumCell);
+	colSumCell.addEventListener("click", () => completeColumn(j));
     }
 
     const emptyCorner = document.createElement("div");
@@ -260,4 +262,32 @@ function updateSumHighlights() {
             }
         }
     }
+}
+
+function completeRow(rowIndex) {
+    let rowSumElement = document.getElementById(`sum-row-${rowIndex}`);
+    if (!rowSumElement.classList.contains("highlight")) return; // Ha nem halványzöld, ne csináljunk semmit!
+
+    for (let col = 0; col < gridSize; col++) {
+        let cell = document.getElementById(`cell-${rowIndex}-${col}`);
+        if (!cell) continue;
+        if (!cell.classList.contains("delete") && !cell.classList.contains("keep")) {
+            cell.classList.add("keep"); // Maradék fehér mezőket zöldre állítjuk
+        }
+    }
+    updateSumHighlights(); // Frissítjük a jelöléseket
+}
+
+function completeColumn(colIndex) {
+    let colSumElement = document.getElementById(`sum-col-${colIndex}`);
+    if (!colSumElement.classList.contains("highlight")) return; // Ha nem halványzöld, ne csináljunk semmit!
+
+    for (let row = 0; row < gridSize; row++) {
+        let cell = document.getElementById(`cell-${row}-${colIndex}`);
+        if (!cell) continue;
+        if (!cell.classList.contains("delete") && !cell.classList.contains("keep")) {
+            cell.classList.add("keep"); // Maradék fehér mezőket zöldre állítjuk
+        }
+    }
+    updateSumHighlights(); // Frissítjük a jelöléseket
 }
