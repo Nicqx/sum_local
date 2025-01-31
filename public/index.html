@@ -22,6 +22,46 @@
         <option value="9">9x9</option>
     </select>
     <div id="grid"></div>
+        <div id="instructions">
+        <h2>Használati útmutató</h2>
+        <p><strong>A Sumplete egy logikai játék</strong>, amelyben számokat kell kiválasztanod, hogy a sorok és oszlopok végén megjelenő összeghez juss.</p>
+
+        <h3>🔹 Játékmenet</h3>
+        <ul>
+            <li>Minden cellában egy szám található.</li>
+            <li>A sorok és oszlopok végén látható egy szám – ez a megmaradó számok összege.</li>
+            <li>A célod, hogy kiválaszd azokat a számokat, amelyeket el kell távolítani (pirosra jelölni), hogy a maradék összegek megfelelőek legyenek.</li>
+            <li>Alternatív megoldásként kijelölheted a megtartandó számokat is (zölddel).</li>
+        </ul>
+
+        <h3>🔹 Gombok és funkciók</h3>
+        <ul>
+            <li><strong>🟢 Új pálya generálása:</strong> Véletlenszerű új számokat generál.</li>
+            <li><strong>🔄 Újrakezdés:</strong> Visszaállítja az összes jelölést anélkül, hogy új pályát hozna létre.</li>
+            <li><strong>💡 Tipp:</strong> Egy véletlenszerű számot halványan megjelöl, segítve a döntést.</li>
+            <li><strong>📏 Pályaméret választó:</strong> A méret módosításával új táblát tölt be a jelenlegi seed alapján.</li>
+        </ul>
+
+        <h3>🔹 Jelölések</h3>
+        <ul>
+            <li><strong>❌ Piros</strong>: A számot el kell távolítani.</li>
+            <li><strong>✅ Zöld</strong>: A számot meg kell tartani.</li>
+            <li><strong>⚪ Fehér</strong>: Még nincs döntés a számról.</li>
+            <li><strong>💡 Halvány piros/zöld:</strong> Tippként jelölt szám.</li>
+        </ul>
+
+        <h3>🔹 Automatikus segítség</h3>
+        <ul>
+            <li>Ha egy sor vagy oszlop összege megfelelő, akkor a végén lévő szám halványzöld lesz.</li>
+            <li>Ha egy halványzöld mezőre kattintasz, akkor az összes még fehér mezőt automatikusan zöldre jelöli.</li>
+        </ul>
+
+        <h3>🔹 Győzelem</h3>
+        <ul>
+            <li>A játék akkor ér véget, ha minden felesleges szám piros, VAGY minden szükséges szám zöld.</li>
+            <li>A végén az idő megáll, és kiírja a teljesítési időt.</li>
+        </ul>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

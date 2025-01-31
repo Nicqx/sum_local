@@ -38,6 +38,11 @@ function startGame(seed) {
     generatePuzzle(currentSeed);
 }
 
+function pseudoRandom(seed) {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return (seed & 0x7FFFFFFF) / 0x7FFFFFFF; // 0 és 1 közötti szám
+}
+
 function generatePuzzle(seed) {
     const grid = document.getElementById("grid");
     grid.innerHTML = "";
@@ -57,11 +62,11 @@ function generatePuzzle(seed) {
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {
             rng = (rng * 1664525 + 1013904223) % 4294967296;
-            let value = (rng % 9) + 1;
+            let value = ((i * 7 + j * 11 + seed) % 9) + 1; // Szám generálása
             puzzleData.numbers.push(value);
 
             let fixedIndex = (i * gridSize + j + seed) % (gridSize * gridSize);
-            let isDeleted = (fixedIndex % 3) === 0;
+            let isDeleted = pseudoRandom(i * gridSize + j + seed) < 0.33; // 🔥 Véletlenszerű törlés
             if (isDeleted) {
                 puzzleData.solution.push(i * gridSize + j);
             } else {
