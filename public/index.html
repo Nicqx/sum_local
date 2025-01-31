@@ -12,9 +12,10 @@
     <button onclick="generateNewSeed()">Új pálya generálása</button>
     <button onclick="resetBoard()">Újrakezdés</button>
     <button onclick="giveHint()">Tipp</button>
+    <button onclick="undoMove()">Visszavonás</button>
     <select id="sizeSelector" onchange="startGame()">
         <option value="3">3x3</option>
-        <option value="4">4x4</option>
+        <option value="4" selected>4x4</option>
         <option value="5">5x5</option>
         <option value="6">6x6</option>
         <option value="7">7x7</option>
@@ -24,7 +25,8 @@
     <div id="grid"></div>
         <div id="instructions">
         <h2>Használati útmutató</h2>
-        <p><strong>A Sumplete egy logikai játék</strong>, amelyben számokat kell kiválasztanod, hogy a sorok és oszlopok végén megjelenő összeghez juss.</p>
+        <p><strong>A Sumplete egy logikai játék</strong>
+	<p><strong>🎯 Cél:</strong> Kihúzni a megfelelő számokat, hogy a sorok és oszlopok végén lévő összeg megegyezzen a kívánt értékkel.</p>
 
         <h3>🔹 Játékmenet</h3>
         <ul>
@@ -39,11 +41,12 @@
             <li><strong>🟢 Új pálya generálása:</strong> Véletlenszerű új számokat generál.</li>
             <li><strong>🔄 Újrakezdés:</strong> Visszaállítja az összes jelölést anélkül, hogy új pályát hozna létre.</li>
             <li><strong>💡 Tipp:</strong> Egy véletlenszerű számot halványan megjelöl, segítve a döntést.</li>
-            <li><strong>📏 Pályaméret választó:</strong> A méret módosításával új táblát tölt be a jelenlegi seed alapján.</li>
+            <li><strong>Visszavonás:</strong> Az utolsó lépést visszavonja, többször is használható.</li>
+	    <li><strong>📏 Pályaméret választó:</strong> A méret módosításával új táblát tölt be a jelenlegi seed alapján.</li>
         </ul>
 
-        <h3>🔹 Jelölések</h3>
-        <ul>
+        <h3>🎨 Speciális vizuális elemek</h3>
+	<ul>
             <li><strong>❌ Piros</strong>: A számot el kell távolítani.</li>
             <li><strong>✅ Zöld</strong>: A számot meg kell tartani.</li>
             <li><strong>⚪ Fehér</strong>: Még nincs döntés a számról.</li>
@@ -61,6 +64,12 @@
             <li>A játék akkor ér véget, ha minden felesleges szám piros, VAGY minden szükséges szám zöld.</li>
             <li>A végén az idő megáll, és kiírja a teljesítési időt.</li>
         </ul>
+	<h3>🏆 Tippek és stratégiák</h3>
+        <p>✔ Kezdj az egyértelmű számokkal. Ha elakadsz, használd a Tipp gombot!</p>
+        <p>✔ Ha egy sor/oszlop majdnem kész, kattints az összeg mezőre, hogy automatikusan kitöltődjön!</p>
+        <p>✔ Ha elrontottál valamit, a Visszavonás gombbal visszaléphetsz!</p>
+
+        <p><strong>🔥 Jó játékot és versenyre fel a legjobb időért! 🔥</strong></p>
     </div>
     <script src="script.js"></script>
 </body>

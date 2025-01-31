@@ -6,6 +6,7 @@ let finalTime = null;
 let currentSeed = null;
 let rowSums = [];
 let colSums = [];
+let history = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     fetch("/random_szam.txt")
@@ -112,11 +113,39 @@ function generatePuzzle(seed) {
     updateSumHighlights(); // ✅ Pálya generálás után azonnal lefuttatjuk az ellenőrzést
 }
 
+function saveHistory() {
+    let currentState = Array.from(document.querySelectorAll(".cell"))
+        .map(cell => ({
+            index: cell.dataset.index,
+            classList: Array.from(cell.classList) // 🔥 Cellák állapotának mentése
+        }));
+    history.push(currentState);
+}
+
+function undoMove() {
+    if (history.length === 0) return; // 📌 Ha nincs mit visszavonni, kilép
+
+    let lastState = history.pop(); // 🔄 Az utolsó lépés betöltése
+
+    lastState.forEach(state => {
+        let cell = document.querySelector(`[data-index='${state.index}']`);
+        if (cell) {
+            cell.className = "cell"; // 🔄 Alaphelyzetbe állítjuk
+            state.classList.forEach(cls => cell.classList.add(cls)); // 🔥 Az előző osztályokat visszaadjuk
+        }
+    });
+
+    updateSumHighlights(); // 🔄 Frissítjük a kiemeléseket
+}
+
 function toggleCellState(cell) {
     if (!startTime) {
         startTime = Date.now();
         startTimer();
     }
+    
+    // 🔥 MENTÉS: Lépés előtt tároljuk az állapotot
+    saveHistory();
 
     if (cell.classList.contains("delete")) {
         cell.classList.remove("delete");
