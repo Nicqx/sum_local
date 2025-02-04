@@ -7,6 +7,7 @@ let currentSeed = null;
 let rowSums = [];
 let colSums = [];
 let history = [];
+let isExtremeMode = false;
 
 document.addEventListener("DOMContentLoaded", () => {
     fetch("/random_szam.txt")
@@ -21,6 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("sizeSelector").addEventListener("change", () => {
         gridSize = parseInt(document.getElementById("sizeSelector").value);
         startGame(currentSeed); // 🔄 Méretváltás után újragenerálás, de a meglévő seed marad!
+    });
+    document.getElementById("extremeMode").addEventListener("change", (event) => {
+        isExtremeMode = event.target.checked;
+        startGame(currentSeed); // Új generálás a kapcsoló módosításakor
     });
 });
 
@@ -64,6 +69,12 @@ function generatePuzzle(seed) {
         for (let j = 0; j < gridSize; j++) {
             rng = (rng * 1664525 + 1013904223) % 4294967296;
             let value = (rng % 9) + 1; // 1-9 közötti értékek
+	
+	    // 🔥 Extrém mód logika: ha be van kapcsolva, lehet negatív is
+            if (isExtremeMode && Math.random() > 0.5) {
+                value *= -1;
+            }
+
             puzzleData.numbers.push(value);
 
             let fixedIndex = (i * gridSize + j + seed) % (gridSize * gridSize);

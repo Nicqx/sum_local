@@ -22,6 +22,10 @@
         <option value="8">8x8</option>
         <option value="9">9x9</option>
     </select>
+    <label>
+        <input type="checkbox" id="extremeMode"> Extrém mód (Negatív számok)
+    </label>
+
     <div id="grid"></div>
         <div id="instructions">
         <h2>Használati útmutató</h2>
@@ -35,13 +39,20 @@
             <li>A célod, hogy kiválaszd azokat a számokat, amelyeket el kell távolítani (pirosra jelölni), hogy a maradék összegek megfelelőek legyenek.</li>
             <li>Alternatív megoldásként kijelölheted a megtartandó számokat is (zölddel).</li>
         </ul>
+	<h3>🔥 Extrém mód</h3>
+            <ul>
+                <li>Ha be van kapcsolva, a pályán **negatív számok is lehetnek**!</li>
+                <li>Kapcsold be, majd kattints az <strong>Új pálya generálása</strong> gombra!</li>
+                <li>Alapértelmezetten ki van kapcsolva.</li>
+           </ul>
+
 
         <h3>🔹 Gombok és funkciók</h3>
         <ul>
             <li><strong>🟢 Új pálya generálása:</strong> Véletlenszerű új számokat generál.</li>
             <li><strong>🔄 Újrakezdés:</strong> Visszaállítja az összes jelölést anélkül, hogy új pályát hozna létre.</li>
             <li><strong>💡 Tipp:</strong> Egy véletlenszerű számot halványan megjelöl, segítve a döntést.</li>
-            <li><strong>Visszavonás:</strong> Az utolsó lépést visszavonja, többször is használható.</li>
+	    <li><strong>🔙 Visszavonás:</strong> Az utolsó lépést visszavonja, többször is használható.</li>
 	    <li><strong>📏 Pályaméret választó:</strong> A méret módosításával új táblát tölt be a jelenlegi seed alapján.</li>
         </ul>
 
