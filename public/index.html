@@ -13,6 +13,7 @@
     <button onclick="resetBoard()">Újrakezdés</button>
     <button onclick="giveHint()">Tipp</button>
     <button onclick="undoMove()">Visszavonás</button>
+    <button onclick="reloadPage()">Oldal frissítése</button> <!-- 🔥 Új gomb -->    
     <select id="sizeSelector" onchange="startGame()">
         <option value="3">3x3</option>
         <option value="4" selected>4x4</option>
@@ -53,6 +54,7 @@
             <li><strong>🔄 Újrakezdés:</strong> Visszaállítja az összes jelölést anélkül, hogy új pályát hozna létre.</li>
             <li><strong>💡 Tipp:</strong> Egy véletlenszerű számot halványan megjelöl, segítve a döntést.</li>
 	    <li><strong>🔙 Visszavonás:</strong> Az utolsó lépést visszavonja, többször is használható.</li>
+	    <li><strong>🔄 Oldal frissítése</strong> Újra tölti az oldalt ha lett új pálya generálva.</li>
 	    <li><strong>📏 Pályaméret választó:</strong> A méret módosításával új táblát tölt be a jelenlegi seed alapján.</li>
         </ul>
 

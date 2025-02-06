@@ -1,4 +1,4 @@
-let gridSize = 4;
+let gridSize = parseInt(localStorage.getItem("gridSize")) || 4; // 🔥 Pályaméret megőrzése
 let puzzleData = { numbers: [], solution: [] };
 let startTime = null;
 let timerInterval = null;
@@ -15,13 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(seed => {
             currentSeed = parseInt(seed.trim());
             console.log("Betöltött seed:", currentSeed);
+	    document.getElementById("sizeSelector").value = gridSize; // ✅ Méret visszaállítása
             startGame(currentSeed); // 🔄 Csak a meglévő seedet használjuk!
         })
         .catch(error => console.error("Hiba a seed betöltésekor:", error));
 
     document.getElementById("sizeSelector").addEventListener("change", () => {
-        gridSize = parseInt(document.getElementById("sizeSelector").value);
-        startGame(currentSeed); // 🔄 Méretváltás után újragenerálás, de a meglévő seed marad!
+    	changeGridSize();
     });
     document.getElementById("extremeMode").addEventListener("change", (event) => {
         isExtremeMode = event.target.checked;
@@ -29,11 +29,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+function reloadPage() {
+	    location.reload(); // 🔥 Újratölti az oldalt anélkül, hogy új seedet generálna
+}
+
+function changeGridSize() {
+	    gridSize = parseInt(document.getElementById("sizeSelector").value);
+	    localStorage.setItem("gridSize", gridSize); // ✅ Pályaméret mentése
+	    startGame(currentSeed);
+}
+
 function startGame(seed) {
     startTime = null;
     finalTime = null;
     clearInterval(timerInterval);
     document.getElementById("timer").textContent = "Idő: 00:00";
+    moveHistory = []; // 🔥 Visszavonás előzmény törlése
 
     if (!seed) {
         console.error("Seed nem elérhető, új generálás szükséges!");
@@ -58,12 +69,24 @@ function generatePuzzle(seed) {
     grid.style.gridTemplateRows = `repeat(${gridSize + 1}, 50px)`;
     grid.style.gap = "5px";
     grid.style.margin = "20px auto";
-    
+
+
+    let extremeMode = document.getElementById("extremeMode").checked; // 🔥 Extrém mód állapota
+
     puzzleData.numbers = [];
     puzzleData.solution = [];
     rowSums = Array(gridSize).fill(0);
     colSums = Array(gridSize).fill(0);
     let rng = seed;
+    let negativeIndices = new Set(); // 🔥 Negatív számokat itt tároljuk
+
+    if (extremeMode) {
+	    for (let i = 0; i < gridSize * gridSize; i++) {
+		    if (pseudoRandom(seed + i) < 0.5) {
+			negativeIndices.add(i);
+		    }
+	    }
+    }
 
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {
