@@ -8,24 +8,30 @@ let rowSums = [];
 let colSums = [];
 let history = [];
 let isExtremeMode = false;
+let negativeIndices = new Set(); // 🔥 Negatív számokat tároló halmaz
 
-document.addEventListener("DOMContentLoaded", () => {
-    fetch("/random_szam.txt")
-        .then(response => response.text())
-        .then(seed => {
-            currentSeed = parseInt(seed.trim());
-            console.log("Betöltött seed:", currentSeed);
-	    document.getElementById("sizeSelector").value = gridSize; // ✅ Méret visszaállítása
-            startGame(currentSeed); // 🔄 Csak a meglévő seedet használjuk!
-        })
-        .catch(error => console.error("Hiba a seed betöltésekor:", error));
+document.addEventListener("DOMContentLoaded", async () => {
+	    try {
+		            let response = await fetch("/random_szam.txt");
+		            let data = await response.text(); // 🔥 Itt biztosítjuk, hogy a data létezik!
 
+		            let parsedData = data.trim().split(":");
+		            currentSeed = parseInt(parsedData[0]);
+		            isExtremeMode = parseInt(parsedData[1]) === 1;
+		            negativeIndices = new Set(parsedData[2] ? parsedData[2].split(",").map(Number) : []);
+
+	    		    console.log("Betöltött seed:", currentSeed);
+	    		    document.getElementById("sizeSelector").value = gridSize; // ✅ Méret visszaállítása
+            		    document.getElementById("extremeMode").checked = isExtremeMode; // 🔥 Extrém mód kapcsoló beállítása
+            		    startGame(currentSeed); // 🔄 Csak a meglévő seedet használjuk!
+  	    } catch (error) {
+	          	    console.error("Hiba a seed betöltésekor:", error);
+	    }
     document.getElementById("sizeSelector").addEventListener("change", () => {
     	changeGridSize();
     });
     document.getElementById("extremeMode").addEventListener("change", (event) => {
-        isExtremeMode = event.target.checked;
-        startGame(currentSeed); // Új generálás a kapcsoló módosításakor
+        startGame(currentSeed); // 🔥 Most már nem változtatja az extrém módot utólag! 
     });
 });
 
@@ -44,7 +50,7 @@ function startGame(seed) {
     finalTime = null;
     clearInterval(timerInterval);
     document.getElementById("timer").textContent = "Idő: 00:00";
-    moveHistory = []; // 🔥 Visszavonás előzmény törlése
+    history = []; // 🔥 Visszavonás előzmény törlése
 
     if (!seed) {
         console.error("Seed nem elérhető, új generálás szükséges!");
@@ -71,22 +77,11 @@ function generatePuzzle(seed) {
     grid.style.margin = "20px auto";
 
 
-    let extremeMode = document.getElementById("extremeMode").checked; // 🔥 Extrém mód állapota
-
     puzzleData.numbers = [];
     puzzleData.solution = [];
     rowSums = Array(gridSize).fill(0);
     colSums = Array(gridSize).fill(0);
     let rng = seed;
-    let negativeIndices = new Set(); // 🔥 Negatív számokat itt tároljuk
-
-    if (extremeMode) {
-	    for (let i = 0; i < gridSize * gridSize; i++) {
-		    if (pseudoRandom(seed + i) < 0.5) {
-			negativeIndices.add(i);
-		    }
-	    }
-    }
 
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {
@@ -94,13 +89,12 @@ function generatePuzzle(seed) {
             let value = (rng % 9) + 1; // 1-9 közötti értékek
 	
 	    // 🔥 Extrém mód logika: ha be van kapcsolva, lehet negatív is
-            if (isExtremeMode && Math.random() > 0.5) {
+            if (isExtremeMode && negativeIndices.has(i * gridSize + j)) {
                 value *= -1;
             }
 
             puzzleData.numbers.push(value);
 
-            let fixedIndex = (i * gridSize + j + seed) % (gridSize * gridSize);
             let isDeleted = pseudoRandom(rng) < 0.35; // 🔥 Véletlenszerű törlés
             if (isDeleted) {
                 puzzleData.solution.push(i * gridSize + j);
@@ -247,10 +241,15 @@ function generateNewSeed() {
         .then(() => {
             fetch("/random_szam.txt")
                 .then(response => response.text())
-                .then(seed => {
-                    console.log("Új seed generálva:", seed.trim());
-                    currentSeed = parseInt(seed.trim());
-                    startGame(currentSeed); // 🔄 Csak most generál új számot
+                .then(data => {
+		    let parsedData = data.trim().split(":");
+		    currentSeed = parseInt(parsedData[0]);
+		    isExtremeMode = parseInt(parsedData[1]) === 1;
+		    negativeIndices = new Set(parsedData[2] ? parsedData[2].split(",").map(Number) : []);
+			                    
+		    document.getElementById("extremeMode").checked = isExtremeMode;
+		    startGame(currentSeed);
+
                 });
         })
         .catch(error => console.error("Hiba a seed generálásakor:", error));
